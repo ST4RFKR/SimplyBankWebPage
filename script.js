@@ -171,6 +171,82 @@ const lazyImagesObserver = new IntersectionObserver(loadImages, {
 lazyImages.forEach(image => lazyImagesObserver.observe(image))
 
 
+//slider 
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const slidesNumber = slides.length;
+const slider = document.querySelector('.slider');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+const dotContainer = document.querySelector('.dots');
+
+
+
+// slider.style.transform = `scale(0.35) translateX(-1000px)`;
+// slider.style.overflow = 'visible';
+const createDots = function () {
+  slides.forEach(function(_,index) {
+    dotContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide='${index}'></button>`)
+  })
+}
+createDots();
+
+const activeteCurrentDot = function (slide){
+  document.querySelectorAll('.dots__dot').forEach(dot =>{
+    dot.classList.remove('dots__dot--active');
+  })
+  document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active');
+}
+activeteCurrentDot(currentSlide);
+
+
+const moveToSlide = function (slide) {
+  slides.forEach((item , index) => {
+    item.style.transform = `translateX(${(index - slide) * 100}%)`;
+  })
+}
+moveToSlide(0);
+
+const nextSlide = function () {
+  if (currentSlide === slidesNumber - 1) { 
+    currentSlide = 0;
+  }else {
+    currentSlide++;
+  }
+  moveToSlide(currentSlide)
+  activeteCurrentDot(currentSlide)
+
+}
+const previousSlide = function () {
+  if (currentSlide === 0) { 
+    currentSlide = slidesNumber - 1;
+  }else {
+    currentSlide--;
+  }
+  moveToSlide(currentSlide)
+  activeteCurrentDot(currentSlide)
+
+}
+
+btnRight.addEventListener('click', nextSlide)
+btnLeft.addEventListener('click', previousSlide)
+
+document.addEventListener('keydown', function(e){
+  // console.log(e);
+  if (e.key === 'ArrowLeft') previousSlide();
+  if (e.key === 'ArrowRight') nextSlide();
+})
+dotContainer.addEventListener('click', function(e){
+  if (e.target.classList.contains('dots__dot')){
+    const slide = e.target.dataset.slide;
+    moveToSlide(slide);
+    activeteCurrentDot(slide);
+    
+  }
+});
+
+
+// <button class="dots__dot" data-slide='0'></button>
 
 
 
