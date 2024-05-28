@@ -15,6 +15,9 @@ const message = document.createElement('div');
 const header = document.querySelector('.header');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
+const lazyImages = document.querySelectorAll('img[data-src]');
+
+
 
 const openModalWindow = function (e) {
   e.preventDefault();
@@ -129,7 +132,7 @@ nav.addEventListener('mouseout', navLinksHoverAnimation.bind(1))
 // const observer = new IntersectionObserver(observerCallback, observerOptions);
 // observer.observe(section1)
 
-
+const navHeight = nav.getBoundingClientRect().height;
 const getStickyNav = function(entries) {
    const entry = entries[0];
    if (!entry.isIntersecting) {
@@ -137,15 +140,35 @@ const getStickyNav = function(entries) {
    }else {
      nav.classList.remove('sticky')
    }
-   console.log(entry)
+  //  console.log(entry)
 }
 const observer = new IntersectionObserver(getStickyNav, {
   root : null,
   threshold: 0,
+  rootMargin: `-${navHeight}px`
 })
 observer.observe(header);
 
+// Lazy loading for img
 
+const loadImages = function(entries, observer){
+  const entry = entries[0];
+  if (!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
+  
+
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  });
+  observer.unobserve(entry.target)
+};
+const lazyImagesObserver = new IntersectionObserver(loadImages, {
+  root : null,
+  threshold : 0.5,
+  // rootMargin : '200px'
+});
+
+lazyImages.forEach(image => lazyImagesObserver.observe(image))
 
 
 
